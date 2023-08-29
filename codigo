@@ -1,0 +1,40 @@
+COMO USAR
+
+Crie um modelo de pagina no Elementor
+No modelo cole o shortcode [recent_posts]
+
+
+Por ultimo cole o codigo a baixo no function.php do seu tema
+
+
+// Função para exibir os últimos 4 posts, excluindo o post atual
+function custom_recent_posts_shortcode($atts) {
+    // Obtém o ID do post atual
+    $current_post_id = get_the_ID();
+    
+    // Argumentos para a consulta dos últimos 4 posts
+    $args = array(
+        'posts_per_page' => 3,
+        'post__not_in' => array($current_post_id), // Exclui o post atual
+    );
+    
+    // Consulta os posts
+    $query = new WP_Query($args);
+    
+    // Inicializa a saída
+    $output = '<ul class="custom-recent-posts">';
+    
+    // Loop para exibir os posts
+    while ($query->have_posts()) {
+        $query->the_post();
+        $output .= '<li class="leia-mais"><a href="' . get_permalink() . '">' . get_the_title() . '</a></li>';
+    }
+    
+    $output .= '</ul>';
+    
+    // Restaura as configurações originais do loop do WordPress
+    wp_reset_postdata();
+    
+    return $output;
+}
+add_shortcode('recent_posts', 'custom_recent_posts_shortcode');
